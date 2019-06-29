@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>accordion</title>
+</head>
+
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+
+    <div id="app">
+
+        <h2>あこーでぃおんめも</h2>
+        <button>topに戻る</button>
+
+
+        <ul class="list">
+            <li v-for="list in listlabel" class="list-item">
+                <a href="#" v-bind:class="{active:active===list}" @click="dropdown(list)">
+                    {{list}}
+                    <br>
+                    <textarea name="" id="" cols="50" rows="2"></textarea><br>
+                    <button @click="add_node_top()">add node</button>
+                    <button @click="">OK(mada)</button>
+                    <button @click="">delete(mada)</button>
+                </a>
+
+                <ul v-if="list===active">
+                    <!-- <ul> -->
+                    <li v-for="subitem in sublistlabel" class="sublist-item">
+                        <a href="#" v-bind:label="subitem.text" @click="dropdown_second(subitem)">
+                            {{subitem.text}}
+                            <br>
+                            <textarea name="" id="" cols="50" rows="2"></textarea><br>
+                            <button @click="add_node_second(subitem.id)">add node</button>
+                        </a>
+                        <ul>
+                            <li v-for="subsubitem in subsublistlabel" v-if="subsubitem.parent===subitem.id && subitem.active"
+                                class="subsublist-item">
+                                <a href="#" v-bind:label="subsubitem" @click="dropdown_third(subsubitem)">
+                                    {{subsubitem.text}}
+                                    <br>
+                                    <textarea name="" id="" cols="50" rows="2"></textarea><br>
+                                    <button @click="add_node_third(subsubitem.id)">add node</button>
+                                </a>
+
+                                <ul>
+                                    <li v-for="subsubsubitem in subsubsublistlabel"
+                                        v-if="subsubsubitem.parent===subsubitem.id && subsubitem.active" class="subsubsublist-item">
+                                        <a href="#" v-bind:label="subsubsubitem">
+                                            {{subsubsubitem.text}}
+                                            <br>
+                                            <textarea name="" id="" cols="50" rows="2"></textarea><br>
+                                        </a>
+
+                                    </li>
+                                </ul>
+
+                            </li>
+                        </ul>
+
+                    </li>
+                </ul>
+
+            </li>
+        </ul>
+    </div>
+</body>
+
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            listlabel: ["title"],
+            sublistlabel: [
+                // { id: 1, text: "1-1" },
+                // { id: 2, text: "1-2" },
+                // { id: 3, text: "1-3" },
+                // { id: 4, text: "1-4" }
+            ],
+            subsublistlabel: [
+                // { id: 5, parent: 1, text: "1-1-1" },
+                // { id: 6, parent: 2, text: "1-2-1" },
+                // { id: 7, parent: 3, text: "1-3-1" },
+            ],
+            subsubsublistlabel: [
+                // { id: 8, parent: 5, text: "1-1-1-1" },
+                // { id: 9, parent: 5, text: "1-1-1-2" },
+                // { id: 10, parent: 6, text: "1-2-1-1" },
+            ],
+            active: "",
+            active_second: [],
+            active_third: [],
+            id_last_add_node: 0
+        },
+        methods: {
+            dropdown(list) {
+                console.log(this.active);
+                this.active = this.active === list ? "" : list;
+            },
+            dropdown_second(item) {
+                console.log(this.active_second);
+                item.active = (item.active === true ? false : true);
+            },
+            dropdown_third(item) {
+                console.log(this.active_third);
+                item.active = (item.active === true ? false : true);
+            },
+            add_node_top() {
+                this.id_last_add_node++;
+                this.sublistlabel.push({ id: this.id_last_add_node, text: "(1)", active: true });
+            },
+            add_node_second(parentId) {
+                this.id_last_add_node++;
+                this.subsublistlabel.push({ id: this.id_last_add_node, parent: parentId, text: "(2)", active: true });
+            },
+            add_node_third(parentId) {
+                this.id_last_add_node++;
+                this.subsubsublistlabel.push({ id: this.id_last_add_node, parent: parentId, text: "(3)", active: true });
+            },
+            delete_node(item){
+                
+            }
+        }
+    });
+</script>
+
+<style>
+    #app {
+        width: 300px;
+    }
+
+    ul {
+        padding: 0;
+    }
+
+    li {
+        list-style: none;
+    }
+
+    a {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .list {
+        padding: 0;
+        border: solid 1px #ccc;
+        width: 160%;
+        background-color: #2196F3;
+    }
+
+    .list-item a {
+        position: relative;
+        padding: 8px;
+        border-bottom: solid 1px #ccc;
+    }
+
+    .list-item a {
+        display: block;
+    }
+
+    .list-item:last-of-type a {
+        border-bottom: none;
+    }
+
+    .list-item>a::after {
+        content: "▼";
+        position: absolute;
+        top: 12px;
+        right: 10px;
+        font-size: 10px;
+    }
+
+    .list-item>a.active::after {
+        content: "▲";
+    }
+
+    .sublist-item>a::after {
+        content: "▼";
+        position: absolute;
+        top: 12px;
+        right: 10px;
+        font-size: 10px;
+    }
+
+    .sublist-item>a.active::after {
+        content: "▲";
+    }
+
+    .subsublist-item>a::after {
+        content: "▼";
+        position: absolute;
+        top: 12px;
+        right: 10px;
+        font-size: 10px;
+    }
+
+    .subsublist-item>a.active::after {
+        content: "▲";
+    }
+
+    .subsubsublist-item>a::after {
+        content: "▼";
+        position: absolute;
+        top: 12px;
+        right: 10px;
+        font-size: 10px;
+    }
+
+    .subsubsublist-item>a.active::after {
+        content: "▲";
+    }
+
+    .sublist-item {
+        font-size: 0.75rem;
+        padding-left: 20px;
+        background-color: rgb(97, 189, 231);
+    }
+
+    .subsublist-item {
+        font-size: 0.75rem;
+        padding-left: 40px;
+        background-color: #B3E5FC;
+    }
+
+    .subsubsublist-item {
+        font-size: 0.75rem;
+        padding-left: 60px;
+        background-color: rgb(252, 252, 252);
+    }
+</style>
+
+</html>
